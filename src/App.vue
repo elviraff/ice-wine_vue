@@ -5,8 +5,8 @@
 <!--  </div>-->
   <div>
     <div class="display">
-    <input v-model.number="operand1"/>
-    <input v-model.number="operand2"/>
+      <input v-model.number="operand1"/>
+      <input v-model.number="operand2"/>
       = {{result}}
     </div>
     <div class="keyboard">
