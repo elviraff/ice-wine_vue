@@ -10,12 +10,13 @@
       = {{result}}
     </div>
     <div class="keyboard">
-      <button v-on:click="calculate ('+')">+</button>
-      <button v-on:click="calculate ('-')">-</button>
-      <button @click="calculate ('/')">/</button>
-      <button @click="calculate ('*')">*</button>
-      <button @click="calculate ('entire')">entire /</button>
-      <button @click="calculate ('^')">^</button>
+      <button v-for="operand in operands"
+              v-bind:key="operand"
+              v-bind:title="operand"
+              v-bind:disabled="operand1 == '' || operand2 == ''"
+              @click="calculate(operand)">
+        {{operand}}
+      </button>
     </div>
     <div v-if="error">ошибка! {{error}} </div>
     <div class="strange-message">
@@ -23,6 +24,21 @@
       <template v-else-if="result < 100"> Результат в первой сотне</template>
       <template v-else> Получилось слишком большое число</template>
     </div>
+    <br>
+    <input v-model="keyboardActivated" type="checkbox" id="activateBoard">
+    <label for="activateBoard"> Activate if e-keyboard is needed</label>
+    <br>
+    <button v-for="keyItem in keyboard"
+      v-bind:key="keyItem"
+      v-bind:disabled="keyboardActivated == false"
+      @click="writeKey(keyItem)">
+      {{keyItem}}
+    </button>
+    <br>
+    <input type="radio" name="selectOperand" value="first" v-model="pickedOperand" id="pickedOperand1">
+    <label for="pickedOperand1"> Operand 1</label>
+    <input type="radio" name="selectOperand" value="second" v-model="pickedOperand" id="pickedOperand2">
+    <label for="pickedOperand2"> Operand 2</label>
   </div>
 </template>
 
@@ -36,19 +52,25 @@
 //     HelloWorld
 //   }
 // }
+let keyResult1 = '';
+let keyResult2 = '';
 export default {
   name: 'Calculator',
   data(){
     return {
-      operand1: 0,
+      operands: ['+', '-', '/', '*', 'entire', '^'],
+      operand1: '',
       operand2: 0,
       result: 0,
-      error: ''
+      error: '',
+      keyboard: ['0','1','2','3','4','5','6','7','8','9','<--'],
+      keyboardActivated: false,
+      pickedOperand:'',
     }
   },
   methods: {
     add() {
-      this.result = this.operand1 + this.operand2
+      this.result = +this.operand1 + +this.operand2
     },
     substract (){
       this.result = this.operand1 - this.operand2
@@ -92,7 +114,27 @@ export default {
           this.degree()
           break;
       }
-    }
+    },
+    writeKey (keyValue){
+      if (this.pickedOperand == 'first') {
+        if (keyValue == '<--'){
+          keyResult1 = Math.floor(keyResult1 / 10);
+          this.operand1 = keyResult1
+        } else {
+          keyResult1 += keyValue;
+          this.operand1 = keyResult1
+        }
+      }
+      else if (this.pickedOperand == 'second'){
+        if (keyValue == '<--') {
+          keyResult2 = Math.floor(keyResult2 / 10);
+          this.operand2 = keyResult2
+        } else {
+          keyResult2 += keyValue;
+          this.operand2 = keyResult2
+        }
+      }
+      },
   }
 }
 
